@@ -27,9 +27,9 @@ Each `set_params_case'N'` contains system parameters(mass, spring, damper ...) a
 # 1. case 1
   ![screenshot](https://github.com/jaejunlee0538/matlab_ws/blob/master/bilateral_teleoperation/resource/result_case1.png)
 # 2. case 2
-  ![screenshot](https://github.com/jaejunlee0538/matlab_ws/blob/master/bilateral_teleoperation/resource/result_case1.png)
+  ![screenshot](https://github.com/jaejunlee0538/matlab_ws/blob/master/bilateral_teleoperation/resource/result_case2.png)
 # 3. case 3
-  ![screenshot](https://github.com/jaejunlee0538/matlab_ws/blob/master/bilateral_teleoperation/resource/result_case1.png)
+  ![screenshot](https://github.com/jaejunlee0538/matlab_ws/blob/master/bilateral_teleoperation/resource/result_case3.png)
 
 ## more...
 
