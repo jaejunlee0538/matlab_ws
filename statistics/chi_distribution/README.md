@@ -3,15 +3,15 @@
 
 from [chi2inv document][1]
 
-Find a value that exceeds `95%`` of the samples from a chi-square distribution with 10 degrees of freedom.
-
-```matlab
-  x = chi2inv(0.95,10)
-  x =
-    18.3070
-```
-
-You would observe values greater than `18.3` only `5%`` of the time by chance.
+>Find a value that exceeds `95%`` of the samples from a chi-square distribution with 10 degrees of freedom.
+>
+>```matlab
+>  x = chi2inv(0.95,10)
+>  %x =
+>  %  18.3070
+>```
+>
+>You would observe values greater than `18.3` only `5%`` of the time by chance.
 
 `18.3` and `5%` correspond to the value with a **significant level** with `0.005` and `10 dof` in **chi square table**.
 
