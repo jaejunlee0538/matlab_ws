@@ -1,0 +1,243 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>simulation</title><meta name="generator" content="MATLAB 8.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-04-30"><meta name="DC.source" content="simulation.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">parameters setting ( Choose one of the 3 cases)</a></li><li><a href="#3">initial condition</a></li><li><a href="#4">operator input function</a></li><li><a href="#5">------------------------------------------simulation------------------------------------------</a></li><li><a href="#6">operator input force</a></li><li><a href="#7">----------------operator_dynamics =&gt; master_impedance-----------------</a></li><li><a href="#8">-----------------master dynamics, operator impedance-----------------</a></li><li><a href="#9">master controller</a></li><li><a href="#10">slave controller</a></li><li><a href="#11">slave dynamics</a></li><li><a href="#12">object impedance model</a></li><li><a href="#13">logging</a></li></ul></div><pre class="codeinput"><span class="comment">%</span>
+
+close <span class="string">all</span>
+clear <span class="string">all</span>
+</pre><h2>parameters setting ( Choose one of the 3 cases)<a name="2"></a></h2><p>set_params_case1 set_params_case2</p><pre class="codeinput">set_params_case3
+</pre><h2>initial condition<a name="3"></a></h2><pre class="codeinput">x_m = 0;
+xd_m = 0;
+xdd_m = 0;
+x_s = 0;
+xd_s = 0;
+xdd_s = 0;
+
+tau_op = 0;
+f_m = 0;
+tau_m = 0;
+f_s = 0;
+tau_s = 0;
+</pre><h2>operator input function<a name="4"></a></h2><pre class="codeinput">input_force = @(t) ( 5-5*cos(4*pi*t));
+</pre><h2>------------------------------------------simulation------------------------------------------<a name="5"></a></h2><pre class="codeinput">dt = 0.001;
+sim_time = 4;
+t = linspace(0, sim_time, sim_time/dt);
+
+x_m_log = zeros(size(t));
+x_s_log = zeros(size(t));
+f_m_log = zeros(size(t));
+f_s_log = zeros(size(t));
+<span class="comment">% iteration</span>
+<span class="keyword">for</span> i = 1:length(t)
+</pre><h2>operator input force<a name="6"></a></h2><pre class="codeinput">    tau_op = input_force(t(i));
+</pre><h2>----------------operator_dynamics =&gt; master_impedance-----------------<a name="7"></a></h2><p>%   operator dynmacis =&gt; master impedance doesn't work at every cases %   master impedance =&gt; operator dynamics doesn't work at every cases</p><pre>   % master impedance model
+   f_m = m_m * xdd_m + b_m * xd_m - tau_m;</pre><pre>   % operator dynamics
+   xdd_m = (tau_op - f_m - b_op * xd_m - c_op * x_m) / m_op;
+   xd_m = xd_m + xdd_m * dt;
+   x_m = x_m + xd_m * dt;</pre><pre class="codeinput"><span class="comment">% ----------------------------------------------------------------------</span>
+</pre><h2>-----------------master dynamics, operator impedance-----------------<a name="8"></a></h2><p>operator impedance =&gt; master dynamics works at every cases master dynamics =&gt; operator impedance works except 1st case.</p><pre class="codeinput">    <span class="comment">% operator impedance model</span>
+    f_m = tau_op - (m_op * xdd_m + b_op * xd_m + c_op * x_m);
+
+    <span class="comment">% master dynamics</span>
+    xdd_m = (tau_m + f_m - b_m * xd_m) / m_m;
+    xd_m = xd_m + xdd_m * dt;
+    x_m = x_m + xd_m * dt;
+
+<span class="comment">% ----------------------------------------------------------------------</span>
+</pre><h2>master controller<a name="9"></a></h2><pre class="codeinput">    tau_m = master_controller(x_m, xd_m, xdd_m, f_m, x_s, xd_s, xdd_s, f_s);
+</pre><h2>slave controller<a name="10"></a></h2><pre class="codeinput">    tau_s = slave_controller(x_m, xd_m, xdd_m, f_m, x_s, xd_s, xdd_s, f_s);
+</pre><h2>slave dynamics<a name="11"></a></h2><pre class="codeinput">    xdd_s = (tau_s - f_s - b_s * xd_s) / m_s;
+    xd_s = xd_s + xdd_s * dt;
+    x_s = x_s + xd_s * dt;
+</pre><h2>object impedance model<a name="12"></a></h2><pre class="codeinput">    f_s = m_w * xdd_s + b_w * xd_s + c_w * x_s;
+</pre><h2>logging<a name="13"></a></h2><pre class="codeinput">    x_m_log(i) = x_m;
+    x_s_log(i) = x_s;
+    f_m_log(i) = f_m;
+    f_s_log(i) = f_s;
+</pre><pre class="codeinput"><span class="keyword">end</span>
+figure(1);
+plot(t, x_m_log, <span class="string">'r--'</span>,<span class="string">'linewidth'</span>,2);
+hold <span class="string">on</span>;
+plot(t, x_s_log, <span class="string">'b'</span>,<span class="string">'linewidth'</span>,2);
+legend(<span class="string">'master'</span>, <span class="string">'slave'</span>);
+title(<span class="string">'position response'</span>);
+
+figure(2);
+plot(t, f_m_log, <span class="string">'r--'</span>,<span class="string">'linewidth'</span>,2);
+hold <span class="string">on</span>;
+plot(t, f_s_log, <span class="string">'b'</span>,<span class="string">'linewidth'</span>,2);
+legend(<span class="string">'master'</span>, <span class="string">'slave'</span>);
+title(<span class="string">'force response'</span>);
+
+autoArrangeFigures(1,2)
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%
+
+close all
+clear all
+
+%% parameters setting ( Choose one of the 3 cases)
+% set_params_case1
+% set_params_case2
+set_params_case3
+
+%% initial condition
+x_m = 0;
+xd_m = 0;
+xdd_m = 0;
+x_s = 0;
+xd_s = 0;
+xdd_s = 0;
+
+tau_op = 0;
+f_m = 0;
+tau_m = 0;
+f_s = 0;
+tau_s = 0;
+
+%% operator input function
+input_force = @(t) ( 5-5*cos(4*pi*t));
+
+%% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHsimulationREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+dt = 0.001;
+sim_time = 4;
+t = linspace(0, sim_time, sim_time/dt);
+
+x_m_log = zeros(size(t));
+x_s_log = zeros(size(t));
+f_m_log = zeros(size(t));
+f_s_log = zeros(size(t));
+% iteration
+for i = 1:length(t)
+    %% operator input force
+    tau_op = input_force(t(i));
+
+%% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHoperator_dynamics => master_impedanceREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-
+% %   operator dynmacis => master impedance doesn't work at every cases
+% %   master impedance => operator dynamics doesn't work at every cases
+% 
+%     % master impedance model
+%     f_m = m_m * xdd_m + b_m * xd_m - tau_m;    
+% 
+%     % operator dynamics
+%     xdd_m = (tau_op - f_m - b_op * xd_m - c_op * x_m) / m_op;
+%     xd_m = xd_m + xdd_m * dt;
+%     x_m = x_m + xd_m * dt;
+    
+% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH 
+
+%% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-master dynamics, operator impedanceREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-
+    % operator impedance => master dynamics works at every cases
+    % master dynamics => operator impedance works except 1st case. 
+    
+    % operator impedance model
+    f_m = tau_op - (m_op * xdd_m + b_op * xd_m + c_op * x_m);   
+
+    % master dynamics
+    xdd_m = (tau_m + f_m - b_m * xd_m) / m_m;
+    xd_m = xd_m + xdd_m * dt;
+    x_m = x_m + xd_m * dt;    
+    
+% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH    
+    %% master controller
+
+    tau_m = master_controller(x_m, xd_m, xdd_m, f_m, x_s, xd_s, xdd_s, f_s);
+    %% slave controller
+
+    tau_s = slave_controller(x_m, xd_m, xdd_m, f_m, x_s, xd_s, xdd_s, f_s);
+    %% slave dynamics
+    xdd_s = (tau_s - f_s - b_s * xd_s) / m_s;
+    xd_s = xd_s + xdd_s * dt;
+    x_s = x_s + xd_s * dt;
+    
+    %% object impedance model
+    f_s = m_w * xdd_s + b_w * xd_s + c_w * x_s;
+    
+    %% logging
+    x_m_log(i) = x_m;
+    x_s_log(i) = x_s;
+    f_m_log(i) = f_m;
+    f_s_log(i) = f_s;
+end
+figure(1);
+plot(t, x_m_log, 'rREPLACE_WITH_DASH_DASH','linewidth',2);
+hold on;
+plot(t, x_s_log, 'b','linewidth',2);
+legend('master', 'slave');
+title('position response');
+
+figure(2);
+plot(t, f_m_log, 'rREPLACE_WITH_DASH_DASH','linewidth',2);
+hold on;
+plot(t, f_s_log, 'b','linewidth',2);
+legend('master', 'slave');
+title('force response');
+
+autoArrangeFigures(1,2)
+##### SOURCE END #####
+--></body></html>

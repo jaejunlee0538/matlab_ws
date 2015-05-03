@@ -1,12 +1,11 @@
-%
-
+%%
 close all
 clear all
 
 %% parameters setting ( Choose one of the 3 cases)
-% set_params_case1
+set_params_case1
 % set_params_case2
-set_params_case3
+% set_params_case3
 
 %% initial condition
 x_m = 0;
@@ -25,7 +24,7 @@ tau_s = 0;
 %% operator input function
 input_force = @(t) ( 5-5*cos(4*pi*t));
 
-%% ------------------------------------------simulation------------------------------------------
+%% init simulation
 dt = 0.001;
 sim_time = 4;
 t = linspace(0, sim_time, sim_time/dt);
@@ -34,12 +33,12 @@ x_m_log = zeros(size(t));
 x_s_log = zeros(size(t));
 f_m_log = zeros(size(t));
 f_s_log = zeros(size(t));
-% iteration
+%% simulation start
 for i = 1:length(t)
-    %% operator input force
+    % operator input force
     tau_op = input_force(t(i));
 
-%% ----------------operator_dynamics => master_impedance-----------------
+% ----------------operator_dynamics => master_impedance-----------------
 % %   operator dynmacis => master impedance doesn't work at every cases
 % %   master impedance => operator dynamics doesn't work at every cases
 % 
@@ -50,10 +49,8 @@ for i = 1:length(t)
 %     xdd_m = (tau_op - f_m - b_op * xd_m - c_op * x_m) / m_op;
 %     xd_m = xd_m + xdd_m * dt;
 %     x_m = x_m + xd_m * dt;
-    
-% ---------------------------------------------------------------------- 
 
-%% -----------------master dynamics, operator impedance-----------------
+% -----------------master dynamics, operator impedance-----------------
     % operator impedance => master dynamics works at every cases
     % master dynamics => operator impedance works except 1st case. 
     
@@ -64,40 +61,43 @@ for i = 1:length(t)
     xdd_m = (tau_m + f_m - b_m * xd_m) / m_m;
     xd_m = xd_m + xdd_m * dt;
     x_m = x_m + xd_m * dt;    
-    
-% ----------------------------------------------------------------------    
-    %% master controller
+
+    % master controller
 
     tau_m = master_controller(x_m, xd_m, xdd_m, f_m, x_s, xd_s, xdd_s, f_s);
-    %% slave controller
+    % slave controller
 
     tau_s = slave_controller(x_m, xd_m, xdd_m, f_m, x_s, xd_s, xdd_s, f_s);
-    %% slave dynamics
+    % slave dynamics
     xdd_s = (tau_s - f_s - b_s * xd_s) / m_s;
     xd_s = xd_s + xdd_s * dt;
     x_s = x_s + xd_s * dt;
     
-    %% object impedance model
+    % object impedance model
     f_s = m_w * xdd_s + b_w * xd_s + c_w * x_s;
     
-    %% logging
+    % logging
     x_m_log(i) = x_m;
     x_s_log(i) = x_s;
     f_m_log(i) = f_m;
     f_s_log(i) = f_s;
 end
+
+%% plotting
 figure(1);
-plot(t, x_m_log, 'r');
-hold on;
-plot(t, x_s_log, 'b');
+plot(t, x_m_log, 'r--','linewidth',2);
+hold on; grid on;
+plot(t, x_s_log, 'b','linewidth',2);
+xlabel('t(sec)','fontsize',15); ylabel('position(m)','fontsize',15)
 legend('master', 'slave');
-title('position response');
+title('position response','fontsize',25);
 
 figure(2);
-plot(t, f_m_log, 'r');
-hold on;
-plot(t, f_s_log, 'b');
+plot(t, f_m_log, 'r--','linewidth',2);
+hold on; grid on;
+plot(t, f_s_log, 'b','linewidth',2);
+xlabel('t(sec)','fontsize',15); ylabel('force(N)','fontsize',15)
 legend('master', 'slave');
-title('force response');
+title('force response','fontsize',25);
 
-autoArrangeFigures()
+autoArrangeFigures(1,2)
