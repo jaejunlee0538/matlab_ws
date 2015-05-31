@@ -20,7 +20,8 @@ Then `dtmf_samples` will generate DTMF signal including space area(silent signal
 
 ####parameters
 Inside the function, there are 2 important parameters.
-1. sampling_rate
+
+1. **sampling_rate**
 
   It is used when generating samples.
 
@@ -28,7 +29,7 @@ Inside the function, there are 2 important parameters.
   dt = 1/sampling_rate;
   ```
 
-2. digits_per_seconds
+2. **digits_per_seconds**
 
   It stands for the number of digits sent by DTMF signal. **Mark(tone) and space(silence) duration** are totally determined with this parameter.
 
