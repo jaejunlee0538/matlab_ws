@@ -4,7 +4,7 @@ clear all
 global sampling_rate
 
 samples = [];
-dial_inpts = '01025324803';
+dial_inpts = '0123456789ABCD*#';
 
 for i = 1:1:length(dial_inpts)
     samples = [samples dtmf_samples(dial_inpts(i))];
