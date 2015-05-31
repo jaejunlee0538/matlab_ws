@@ -6,8 +6,6 @@ key_pressed = menu('DTMf',key_info);
 
 [col ,row] = ind2sub([4 4], key_pressed);
 
-
-
 %% generate sound
 freq = [low_freq_array(row), high_freq_array(col)];
 sampling_rate = 11025; % Hz
