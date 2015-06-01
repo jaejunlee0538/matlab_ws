@@ -72,7 +72,7 @@ run `dtmf_gui.m`.
 
 **DTMF GUI interface**
 
-![gui1](https://github.com/jaejunlee0538/matlab_ws/blob/master/digital_signal_processing/DTMF/dtmf_gui2.png)
+![gui1](https://github.com/jaejunlee0538/matlab_ws/blob/master/digital_signal_processing/DTMF/dtmf_gui1.png)
 
 sampling_rate and digits_per_second parameters can be modulated in GUI.
 (You have to press `Enter` after changing the values)
