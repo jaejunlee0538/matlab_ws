@@ -62,6 +62,16 @@ It generate a DTMF signal for `0123456789ABCD*#` dial.
 #####gui program
 run `dtmf_gui.m`.
 
+**DTMF GUI interface**
+
+![gui1](https://github.com/jaejunlee0538/matlab_ws/blob/master/digital_signal_processing/DTMF/dtmf_gui2.png)
+
+sampling_rate and digits_per_second parameters can be modulated in GUI.
+(You have to press `Enter` after changing the values)
+
+**DTMF signal of keypad 1(`697` Hz + `1209` Hz)**
+
+![gui2](https://github.com/jaejunlee0538/matlab_ws/blob/master/digital_signal_processing/DTMF/dtmf_gui2.png)
 
 ##References
 
