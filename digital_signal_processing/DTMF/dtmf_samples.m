@@ -1,7 +1,11 @@
-function [ samples ] = dtmf_samples(key)
-global sampling_rate
-digits_per_seconds = 5;    
-sampling_rate = 11025;
+function [ samples ] = dtmf_samples(key, sampling_rate, digits_per_seconds)
+
+if nargin < 2
+    digits_per_seconds = 5;    
+    sampling_rate = 8000;
+elseif nargin < 3
+    sampling_rate = 8000;
+end
 
 %% Constants
 valid_key_input =  ['1','2','3','A','4','5','6','B','7','8','9','C','*','0','#','D'];

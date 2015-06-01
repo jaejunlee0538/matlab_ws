@@ -1,7 +1,7 @@
 %
 % online dtmf generator : http://onlinetonegenerator.com/dtmf.html
 clear all
-global sampling_rate
+sampling_rate = 8000;
 
 samples = [];
 dial_inpts = '0123456789ABCD*#';
