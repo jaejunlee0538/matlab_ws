@@ -1,41 +1,41 @@
-close all
-f = 440;
-sampling_rate = 11025;
-n = 0:1/sampling_rate:1;
-x = sin(2*pi*f*n);
-
-X = fft(x);
-
-freq_range = 0:(sampling_rate);
-
-plot(freq_range, X);
-%% prof code
 % close all
 % f = 440;
 % sampling_rate = 11025;
 % n = 0:1/sampling_rate:1;
 % x = sin(2*pi*f*n);
 % 
-% N = 256;
-% xw = conv(x(1:N),hamming(N));
+% X = fft(x, 25);
 % 
-% X = fft(xw);
-% X_mag = 20*log10(abs(X));
-% X_phase = unwrap(angle(X));
+% freq_range = 0:(sampling_rate);
 % 
-% f = (0:N-1)*sampling_rate/N;
-% 
-% % original & windowed signal
-% figure(1);
-% plot(n(1:N), x(1:N),'r'); hold on
-% plot(n(1:N), xw(1:N),'b');
-% hold off
-% legend('original signal', 'windowed signal');
-% 
-% figure(2);
-% plot(f, X_mag);
-% 
-% figure(3);
-% plot(f, X_phase);
-% 
-% autoArrangeFigures()
+% plot(freq_range, X);
+%% prof code
+clear all
+close all
+f = 440;
+sampling_rate = 11025;
+n = 0:1/sampling_rate:1;
+x = sin(2*pi*f*n);
+
+N = 1024;
+xw = x(1:N)'.*hamming(N);
+% xw = x(1:N)';
+
+X = fft(xw);
+X_mag = 20*log10(abs(X));
+X_phase = unwrap(angle(X));
+
+f = (0:N-1)*sampling_rate/N;
+
+% original & windowed signal
+figure(1);
+plot(n(1:N), x(1:N),'r'); hold on
+plot(n(1:N), xw(1:N),'b');
+hold off
+legend('original signal', 'windowed signal');
+
+figure(2);
+plot(f, X_mag);
+
+figure(3);
+plot(f, X_phase);
