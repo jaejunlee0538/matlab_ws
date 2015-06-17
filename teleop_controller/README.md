@@ -18,7 +18,7 @@ Reference Paper : [Bilateral Control of Master-Slave Manipulators for Ideal Kine
 
 
 
-[position_position_wo_delay]:https://raw.github.com/jaejunlee0538/matlab_ws/master/teleop/resource/pos_pos_without_delay.png
-[position_force_wo_delay]:https://raw.github.com/jaejunlee0538/matlab_ws/master/teleop/resource/pos_force_without_delay.png
-[force_position_wo_delay]:https://raw.github.com/jaejunlee0538/matlab_ws/master/teleop/resource/force_pos_without_delay.png
-[force_force_wo_delay]:https://raw.github.com/jaejunlee0538/matlab_ws/master/teleop/resource/force_force_without_delay.png
+[position_position_wo_delay]:https://raw.github.com/jaejunlee0538/matlab_ws/master/teleop_controller/resource/pos_pos_without_delay.png
+[position_force_wo_delay]:https://raw.github.com/jaejunlee0538/matlab_ws/master/teleop_controller/resource/pos_force_without_delay.png
+[force_position_wo_delay]:https://raw.github.com/jaejunlee0538/matlab_ws/master/teleop_controller/resource/force_pos_without_delay.png
+[force_force_wo_delay]:https://raw.github.com/jaejunlee0538/matlab_ws/master/teleop_controller/resource/force_force_without_delay.png
