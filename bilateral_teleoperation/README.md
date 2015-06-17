@@ -25,11 +25,11 @@ Each `set_params_case'N'` contains system parameters(mass, spring, damper ...) a
 ```
 
 # 1. case 1
-  ![screenshot](https://github.com/jaejunlee0538/matlab_ws/blob/master/bilateral_teleoperation/resource/result_case1.png)
+  ![screenshot](https://raw.github.com/jaejunlee0538/matlab_ws/master/bilateral_teleoperation/resource/result_case1.png)
 # 2. case 2
-  ![screenshot](https://github.com/jaejunlee0538/matlab_ws/blob/master/bilateral_teleoperation/resource/result_case2.png)
+  ![screenshot](https://raw.github.com/jaejunlee0538/matlab_ws/master/bilateral_teleoperation/resource/result_case2.png)
 # 3. case 3
-  ![screenshot](https://github.com/jaejunlee0538/matlab_ws/blob/master/bilateral_teleoperation/resource/result_case3.png)
+  ![screenshot](https://raw.github.com/jaejunlee0538/matlab_ws/master/bilateral_teleoperation/resource/result_case3.png)
 
 ## more...
 
@@ -41,15 +41,15 @@ This code reproduced same results with the paper. But if calculation order chang
 
 ```matlab
 % operator impedance => master dynamics works at every cases
-% master dynamics => operator impedance works except 1st case. 
+% master dynamics => operator impedance works except 1st case.
 
 % operator impedance model
-f_m = tau_op - (m_op * xdd_m + b_op * xd_m + c_op * x_m);   
+f_m = tau_op - (m_op * xdd_m + b_op * xd_m + c_op * x_m);
 
 % master dynamics
 xdd_m = (tau_m + f_m - b_m * xd_m) / m_m;
 xd_m = xd_m + xdd_m * dt;
-x_m = x_m + xd_m * dt;   
+x_m = x_m + xd_m * dt;
 ```
 #### Diverging version
 
@@ -60,7 +60,7 @@ Anyway simulation diverged.
 % master impedance => operator dynamics doesn't work at every cases
 
 % master impedance model
-f_m = m_m * xdd_m + b_m * xd_m - tau_m;    
+f_m = m_m * xdd_m + b_m * xd_m - tau_m;
 
 % operator dynamics
 xdd_m = (tau_op - f_m - b_op * xd_m - c_op * x_m) / m_op;
@@ -68,3 +68,17 @@ xd_m = xd_m + xdd_m * dt;
 x_m = x_m + xd_m * dt;
 ```
 
+#### Modification about case2
+For case2, we had different result compared to the paper. That's because `Equation 66` had wrong sign.
+
+>**equation66**
+
+>![equation66]
+
+`-f_ms` at the end should be modified with `+f_ms`.
+
+Then case2 result will become same with the paper.
+
+[equation66]:https://raw.github.com/jaejunlee0538/matlab_ws/master/bilateral_teleoperation/resource/equation66.png
+
+[case2_modified]:https://raw.github.com/jaejunlee0538/matlab_ws/master/bilateral_teleoperation/resource/result_case2_modified.png
