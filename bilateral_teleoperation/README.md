@@ -68,7 +68,7 @@ xd_m = xd_m + xdd_m * dt;
 x_m = x_m + xd_m * dt;
 ```
 
-#### Modification about case2
+#### Modification with case2
 For case2, we had different result compared to the paper. That's because `Equation 66` had wrong sign.
 
 >**equation66**
@@ -78,6 +78,11 @@ For case2, we had different result compared to the paper. That's because `Equati
 `-f_ms` at the end should be modified with `+f_ms`.
 
 Then case2 result will become same with the paper.
+
+![case2_modified]
+
+
+
 
 [equation66]:https://raw.github.com/jaejunlee0538/matlab_ws/master/bilateral_teleoperation/resource/equation66.png
 
