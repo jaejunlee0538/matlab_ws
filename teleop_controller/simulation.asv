@@ -3,9 +3,9 @@ clear all
 %% Choose controller scheme
 
 % set_position_position_controller
-set_position_force_controller
+% set_position_force_controller
 % set_force_position_controller
-% set_force_force_controller
+set_force_force_controller
 
 
 master_controller = @(x_m, xd_m, xdd_m, f_m, x_s, xd_s, xdd_s, f_s) ((K_mpm * x_m + K_mpm_d * xd_m + K_mpm_dd * xdd_m + K_mfm * f_m) - ...
@@ -20,7 +20,7 @@ input_force = @(t) ( 5-5*cos(4*pi*t));
 
 %% init simulation
 dt = 0.001;
-comm_delay = 200; % 100 dt steps
+comm_delay = 0; % 100 dt steps
 sim_time = 10;
 t = linspace(0, sim_time, sim_time/dt);
 
@@ -30,25 +30,23 @@ f_m_log = zeros(size(t));
 f_s_log = zeros(size(t));
 
 %% initial condition
-x_m_delayed = 0;
-xd_m_delayed = 0;
-xdd_m_delayed = 0;
-f_m_delayed = 0;
-x_s_delayed = 0;
-xd_s_delayed = 0;
-xdd_s_delayed = 0;
-f_s_delayed = 0;
+x_m = 0;
+xd_m = 0;
+xdd_m = 0;
+f_m = 0;
+x_s = 0;
+xd_s = 0;
+xdd_s = 0;
+f_s = 0;
 
 
 %% simulation start
 tau_op = input_force(t(1));
-[x_m, xd_m, xdd_m, f_m] = master_simulation(x_s_delayed, xd_s_delayed, xdd_s_delayed, f_s_delayed,...
-    tau_op, dt, master_controller);
-[x_s, xd_s, xdd_s, f_s] = slave_simulation(x_m_delayed, xd_m_delayed, xdd_m_delayed, f_m_delayed,...
-    dt, slave_controller);
+[x_m_, xd_m_, xdd_m_, f_m_] = master_simulation(x_s, xd_s, xdd_s, f_s, tau_op, dt, master_controller);
+[x_s_, xd_s_, xdd_s_, f_s_] = slave_simulation(x_m, xd_m, xdd_m, f_m, dt, slave_controller);
 
-buffer_master_to_slave = [x_m, xd_m, xdd_m, f_m];
-buffer_slave_to_master = [x_s, xd_s, xdd_s, f_s];
+buffer_master_to_slave = [x_m_, xd_m_, xdd_m_, f_m_];
+buffer_slave_to_master = [x_s_, xd_s_, xdd_s_, f_s_];
 
 for i = 2:length(t)
     if size(buffer_master_to_slave,1) > comm_delay
@@ -75,7 +73,7 @@ for i = 2:length(t)
         dt, slave_controller); 
     
     buffer_master_to_slave(end+1, :) = [x_m, xd_m, xdd_m, f_m];
-    buffer_slave_to_master(end+1, :) = [x_s, xd_s, xdd_s, f_s];
+    buffer_slave_to_master(end+1,:) = [x_s, xd_s, xdd_s, f_s];
     
     % logging
     x_m_log(i) = x_m;
