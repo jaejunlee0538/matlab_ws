@@ -3,6 +3,11 @@ Reference Paper : [Bilateral Control of Master-Slave Manipulators for Ideal Kine
 1DOF Teleoperation Control Architectures
 
 ## Position-Position
+
+|Gain | Value  |Gain | Value  |
+|:---:|:------:|:---:|:------:|
+|K_mpm|0.0     |K_spm|0.0     |
+
 ![position_position_wo_delay]
 
 ## Position-Force

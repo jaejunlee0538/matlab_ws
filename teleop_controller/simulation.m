@@ -20,6 +20,7 @@ input_force = @(t) ( 5-5*cos(4*pi*t));
 
 %% init simulation
 dt = 0.001;
+comm_delay = 200; % 100 dt steps
 sim_time = 10;
 t = linspace(0, sim_time, sim_time/dt);
 
@@ -29,21 +30,52 @@ f_m_log = zeros(size(t));
 f_s_log = zeros(size(t));
 
 %% initial condition
-x_m = 0;
-xd_m = 0;
-xdd_m = 0;
-f_m = 0;
-x_s = 0;
-xd_s = 0;
-xdd_s = 0;
-f_s = 0;
+x_m_delayed = 0;
+xd_m_delayed = 0;
+xdd_m_delayed = 0;
+f_m_delayed = 0;
+x_s_delayed = 0;
+xd_s_delayed = 0;
+xdd_s_delayed = 0;
+f_s_delayed = 0;
+
 
 %% simulation start
-for i = 1:length(t)
-    % operator input force
+tau_op = input_force(t(1));
+[x_m, xd_m, xdd_m, f_m] = master_simulation(x_s_delayed, xd_s_delayed, xdd_s_delayed, f_s_delayed,...
+    tau_op, dt, master_controller);
+[x_s, xd_s, xdd_s, f_s] = slave_simulation(x_m_delayed, xd_m_delayed, xdd_m_delayed, f_m_delayed,...
+    dt, slave_controller);
+
+buffer_master_to_slave = [x_m, xd_m, xdd_m, f_m];
+buffer_slave_to_master = [x_s, xd_s, xdd_s, f_s];
+
+for i = 2:length(t)
+    if size(buffer_master_to_slave,1) > comm_delay
+        from_master = buffer_master_to_slave(1,:);
+        buffer_master_to_slave = buffer_master_to_slave(2:end,:);
+        x_m_delayed = from_master(1);
+        xd_m_delayed = from_master(2);
+        xdd_m_delayed = from_master(3);
+        f_m_delayed = from_master(4);
+    end
+    if size(buffer_slave_to_master,1) > comm_delay
+        from_slave = buffer_slave_to_master(1,:);
+        buffer_slave_to_master = buffer_slave_to_master(2:end,:);
+        x_s_delayed = from_slave(1);
+        xd_s_delayed = from_slave(2);
+        xdd_s_delayed = from_slave(3);
+        f_s_delayed = from_slave(4);
+    end
+    
     tau_op = input_force(t(i));
-    [x_m, xd_m, xdd_m, f_m] = master_simulation(x_s, xd_s, xdd_s, f_s, tau_op, dt, master_controller);
-    [x_s, xd_s, xdd_s, f_s] = slave_simulation(x_m, xd_m, xdd_m, f_m, dt, slave_controller); 
+    [x_m, xd_m, xdd_m, f_m] = master_simulation(x_s_delayed, xd_s_delayed, xdd_s_delayed, f_s_delayed, ...
+        tau_op, dt, master_controller);
+    [x_s, xd_s, xdd_s, f_s] = slave_simulation(x_m_delayed, xd_m_delayed, xdd_m_delayed, f_m_delayed,...
+        dt, slave_controller); 
+    
+    buffer_master_to_slave(end+1, :) = [x_m, xd_m, xdd_m, f_m];
+    buffer_slave_to_master(end+1, :) = [x_s, xd_s, xdd_s, f_s];
     
     % logging
     x_m_log(i) = x_m;
