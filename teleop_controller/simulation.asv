@@ -1,0 +1,163 @@
+clear all
+
+%% Choose controller scheme
+
+% set_position_position_controller
+set_position_force_controller
+% set_force_position_controller
+% set_force_force_controller
+
+
+master_controller = @(x_m, xd_m, xdd_m, f_m, x_s, xd_s, xdd_s, f_s) ((K_mpm * x_m + K_mpm_d * xd_m + K_mpm_dd * xdd_m + K_mfm * f_m) - ...
+        (K_mps * x_s + K_mps_d * xd_s + K_mps_dd * xdd_s + K_mfs * f_s));
+slave_controller = @(x_m, xd_m, xdd_m, f_m, x_s, xd_s, xdd_s, f_s) ((K_spm * x_m + K_spm_d * xd_m + K_spm_dd * xdd_m + K_sfm * f_m) - ...
+        (K_sps * x_s + K_sps_d * xd_s + K_sps_dd * xdd_s + K_sfs * f_s));
+
+%% operator input function
+input_force = @(t) ( 5-5*cos(4*pi*t));
+% input_force = @(t) ( 5-5*cos(1*pi*t));
+% input_force = @(t) (1);
+
+%% init simulation
+TDPA_ON = 1;
+dt = 0.001;
+comm_delay = 100; % 100 dt steps
+sim_time = 100;
+t = linspace(0, sim_time, sim_time/dt);
+
+%% initial condition
+x_m_delayed = 0;
+xd_m_delayed = 0;
+xdd_m_delayed = 0;
+f_m_delayed = 0;
+x_s_delayed = 0;
+xd_s_delayed = 0;
+xdd_s_delayed = 0;
+f_s_delayed = 0;
+Em_in_delayed = 0;
+Es_in_delayed = 0;
+
+x_ms = 0;
+xd_ms = 0;
+xdd_ms = 0;
+x_sm = 0;
+xd_sm = 0;
+xdd_sm = 0;
+
+%% simulation start
+IDX_x_m=1; IDX_xd_m=2; IDX_xdd_m=3; IDX_f_m=4; IDX_Em_in=5; IDX_Em_out=6;
+IDX_x_s=1; IDX_xd_s=2; IDX_xdd_s=3; IDX_f_s=4; IDX_Es_in=5; IDX_Es_out=6;
+% master_data : [x_m, xd_m, xdd_m, f_m, Em_in, Em_out]
+master_data = zeros(length(t), 6);
+% slave_data : [x_s, xd_s, xdd_s, f_s, Es_in, Es_out]
+slave_data = zeros(length(t), 6);
+
+for i = 2:length(t)
+    %% receiving delayed data
+    if i > (comm_delay+1)
+        idx_delayed_data = i-(comm_delay+1);
+        
+        xd_s_delayed = slave_data(idx_delayed_data, IDX_xd_s);
+        f_s_delayed = slave_data(idx_delayed_data, IDX_f_s);
+        Es_in_delayed = slave_data(idx_delayed_data, IDX_Es_in);
+        
+        f_m_delayed = master_data(idx_delayed_data, IDX_f_m);
+        xd_m_delayed = master_data(idx_delayed_data, IDX_xd_m);
+        Em_in_delayed = master_data(idx_delayed_data, IDX_Em_in);
+    end
+    
+    %% -----------------------Master Side-----------------------------------
+    % generate operator input at time t
+    tau_op = input_force(t(i));
+    
+    % if TDPA is on and network is active, f_s_delayed will be modified.
+    % Otherwise, f_s_delayed will be left intact.
+    [f_s_delayed, Em_in, Em_out] = TDPA_master(xd_m, f_s_delayed, Es_in_delayed, dt, TDPA_ON);
+    
+    % calculating xdd_s and x_s from xd_s.
+    % TODO : implement integration and defferentiation
+    
+    [x_m, xd_m, xdd_m, f_m] = master_simulation(x_s_delayed, xd_s_delayed, xdd_s_delayed, f_s_delayed, ...
+        tau_op, dt, master_controller);
+    %---------------------------------------------------------------------
+    
+    %% -----------------------Slave Side-----------------------------------
+    
+    % if TDPA is on and network is active, xd_m_delayed will be modified.
+    % Otherwise, xd_m_delayed will be left intact.
+    [xd_m_delayed, Es_in, Es_out] = TDPA_slave(xd_m_delayed, f_s, Em_in_delayed, dt, TDPA_ON);
+    
+    % calculating xdd_m and x_m from xd_m.
+    % TODO : implement integration and defferentiation
+    
+    [x_s, xd_s, xdd_s, f_s] = slave_simulation(x_m_delayed, xd_m_delayed, xdd_m_delayed, f_m_delayed,...
+        dt, slave_controller); 
+    %---------------------------------------------------------------------
+    
+    %% Sending data
+    master_data(i,:) = [x_m, xd_m, xdd_m, f_m, Em_in, Em_out];
+    slave_data(i,:) = [x_s, xd_s, xdd_s, f_s, Es_in, Es_out];
+end
+% 
+% %% plotting control result
+% figure(1);
+% subplot(1,2,1);
+% plot(t, x_m_log, 'r','linewidth',2);
+% hold on; grid on;
+% plot(t, x_s_log, 'b','linewidth',2);
+% hold off;
+% xlabel('t(sec)','fontsize',15); ylabel('position(m)','fontsize',15)
+% legend('master', 'slave');
+% title(strcat(controller_type.name,'(position response)'),'fontsize',20);
+% 
+% 
+% subplot(1,2,2);
+% plot(t, f_m_log, 'r','linewidth',2);
+% hold on; grid on;
+% plot(t, f_s_log, 'b','linewidth',2);
+% hold off;
+% xlabel('t(sec)','fontsize',15); ylabel('force(N)','fontsize',15)
+% legend('master', 'slave');
+% title(strcat(controller_type.name,'(force response)'),'fontsize',20);
+% 
+% %% TDPA Result
+% figure(3)
+% subplot(1,2,1);
+% [ax,h1,h2] = plotyy(t, f_s_delayed_log, t, [Es_in_log',Em_out_log']);
+% set(h2(1),'linewidth',3);
+% set(h2(2),'linewidth',3);
+% set(h1,'linewidth',1);
+% set(h1, 'color','k');
+% set(get(ax(1),'Ylabel'),'String','F_s delayed')
+% set(get(ax(1),'Ylabel'),'FontSize',15)
+% set(get(ax(2),'Ylabel'),'String','Energy')
+% set(get(ax(2),'Ylabel'),'FontSize',15)
+% xlabel('t(sec)','fontsize',15); 
+% grid on;
+% lh = legend( 'F_s delayed', 'Es in', 'Em out');
+% set(lh,'fontsize',13)
+% set(lh,'location','northwest')
+% title('Master Side Port', 'fontsize', 20);
+% 
+% 
+% subplot(1,2,2);
+% [ax,h1,h2] = plotyy(t,xd_m_delayed_log, t,[Es_in_log',Em_out_log']);
+% set(h2(1),'linewidth',3);
+% set(h2(2),'linewidth',3);
+% set(h1,'linewidth',1);
+% set(h1, 'color','k');
+% set(get(ax(1),'Ylabel'),'String','X_d_m delayed')
+% set(get(ax(1),'Ylabel'),'FontSize',15)
+% set(get(ax(2),'Ylabel'),'String','Energy')
+% set(get(ax(2),'Ylabel'),'FontSize',15)
+% xlabel('t(sec)','fontsize',15); 
+% grid on;
+% lh = legend('X_d_m delayed', 'Em in', 'Es out');
+% set(lh,'fontsize',13)
+% set(lh,'location','northwest')
+% title('Master Side Port', 'fontsize', 20);
+% title('Slave Side Port', 'fontsize', 20);
+
+
+
+
